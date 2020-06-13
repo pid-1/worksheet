@@ -1,0 +1,147 @@
+%%----------------------------%%
+%% requires 'vimwiki/vimwiki' %%
+%%----------------------------%%
+
+= Contents =
+   - [[#Extract Transform Load|Extract Transform Load]]
+   - [[#Python Backend (Flask)|Python Backend (Flask)]]
+   - [[#JavaScript Frontend (React)|JavaScript Frontend (React)]]
+   - [[#Dashboard (PowerBI)|Dashboard (PowerBI)]]
+   - [[#Documentation|Documentation]]
+
+
+== Extract Transform Load ==
+1. [X] *Extract* (API calls)
+   1. [X] Create incremental test data
+      1. [X] Monday     - Current database / rollback point
+      2. [X] Tuesday    - Hire on remaining people for 08-19
+      3. [X] Wednesday  - Add 1-2 tickets
+      4. [X] Thursday   - Hire people for 08-24, add 2-3 tickets
+   2. [X] In incremental data, modify "status" appropriately for each week
+   3. [X] Create Helios.sh
+      - Effectively the same thing that ito.py does now,
+        but with a JSON file instead of an Excel document
+      - Only for testing, to simulate periodic API calls
+      - Manages the "date"
+      - On each successive run:
+         1. Increments the 'day'
+         2. Pulls data from that corresponding file
+         3. Writes to disk, or to a temp database? :revisit:
+         4. Writes changes to an _automated changes_ table in the DB
+            - Track changes that were made by the automated script,
+            - In contrast to a _manual changes_ table
+2. [ ] *Transform* (Python analysis / restructure)
+   1. [ ] Iterates over tempDB or csv from Extract:
+      - Fixes redundant columns
+      - Transform Worker/Hire type into 1 field
+      - Transform machine options/model to 1 field
+      - Pulls out only the required columns
+3. [ ] *Load* (Upload to database)
+   1. [ ] Updates existing entries with the new data
+      * ONLY if the corresponding row (or cell) was not changed manually
+   2. [ ] Adds entries to the DB that did not previously exist
+      * We are only interested in the last 2 phases of Workday status
+      * I'm assuming these are 'offer extended' and 'hired'
+
+== Python Backend (Flask) ==
+1. [ ] Restructure API calls
+   - Currently uses column + query, e.g.:
+      - GET /api/v1/tickets?column=name&query=Marcus
+   - Instead do:
+      - GET /api/v1/tickets?name=Marcus
+2. [ ] Create back-end logic to allow for nested api calls
+   - Followup on the last bullet point
+   - Allow for something like:
+      - Query both "start date" & "hire status"
+      - GET /api/v1/ticket?start_date=2019-05-12&hire_status=hired
+3. [ ] Use version number to ensure we're not nuking changes
+   - Compare live version against database version
+   - `if live > database: raise Exception`
+4. [O] Finish composing SQL queries and finalizing columns
+   - [X] (+) workday.extension,  for NHO export
+   - [X] (-) workday.ticket_req
+   - [X] Prepend #s to "hire_status"
+      - e.g., "4 - offer accepted"
+      - e.g., "5 - hired"
+   - [ ] Add *depot_type* to the workday database
+   - [X] Confirm against current New Hire sheet for all matching rows
+5. [X] Use authorization
+   - Cookies
+      - flask.request.cookies?
+      - session.cookies?
+      - How do these work?
+   - Token
+6. [ ] Move database OUT of the repository, put in a _databases/_ dir
+7. [X] Use pathlib for all paths, so they are not relative to current dir
+8. [ ] Look into docker + kubernetes?
+
+== JavaScript Frontend (React) ==
+1. [ ] IMPORTANT
+   1. [ ] Move initial API call to Table to improve load time
+   2. [ ] Don't do API calls for 'view', use gridAPI to dynamically show/hide
+2. [X] Password protected log in
+3. [ ] Site-wide dark mode
+4. [ ] Per-user settings
+   - Light/dark mode
+   - Default view
+   - Column select / order
+5. [ ] Router to create different "views"
+   - [ ] Home page
+   - [ ] Manager's view
+      - Checklist of steps
+      - Show completed & to do items
+   - [ ] Workbook view
+   - [ ] List of changes 
+6. [ ] Implement an `if(confirm( ... ))` on version mismatch
+7. [ ] VIM style navigation via h,j,k,l
+8. [X] Do not re-load the entire table on changes
+9. [X] Re-load when clearing out a cell
+10. [X] Re-load when incorrect data leads to fallback
+   - Must pass the original rowId in the response
+11. [ ] Create a `Generate New Hire Sheet export` document
+   - Will format a document to make easy importing into the NHO pdf
+   - Name, Email, Extension
+   - Makes API request to flask for names on current selection
+      - Use `pandas.to_excel()` and `flask.send_file()` to send back
+
+== Dashboard (PowerBI) ==
+1. [ ] Metrics
+   1. [ ] Weekly 2nd/3rd contact (percent of total hires)
+   2. [ ] Quarterly 2nd/3rd contact (percent of total hires)
+2. [ ] Graphs/Charts
+   1. [ ] Accounts activated by day
+   2. [ ] Orders placed by day
+   3. [ ] Status of new hires by day
+      - Segmented bar graphs:
+         - Not started
+         - In progress
+         - Ready
+         - Transfer/NHN
+
+== Documentation ==
+Host the documentation as both a text file,
+and a formatted document on the page itself
+
+1. [X] Overview
+   - [X] What is it?
+   - [X] Brief explanation of the functionality
+   - [X] What problems does this solve
+   - [X] What is the goal going forward
+2. [X] Completeness
+   - [X] What functionality currently exists
+   - [X] What is in progress
+   - [X] What is planned for the future
+   - [X] What is impossible given my current constraints
+      - Time, knowledge, or access (e.g., API keys)
+3. [ ] Usability
+   - [ ] Rundown of how to use the application
+      1. [ ] From perspective of Depot
+      2. [ ] From pretend perspective of Onboarding
+   - [ ] Entering Data
+      - [ ] Updating status
+      - [ ] Updating tickets
+      - [ ] Deleting tickets
+         - Explain back-end logic for this
+4. [X] Backend Usage / Going Forward
+   - [X] Backend can serve as an API for other applications
+   - [X] API calls documentation from /api/v1/help

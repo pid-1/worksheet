@@ -1,0 +1,9 @@
+HireInfo
+   - add submit button to query
+      - can do a small button that's just =>
+
+"safe" colors:
+   #44749D (dark blue)
+   #C6D4E1 (light blue)
+   #EBE7E0 (off white grey thing)
+   #BDB8AD (mid brown grey)

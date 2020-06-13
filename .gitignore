@@ -1,0 +1,17 @@
+.hg*
+.env
+
+*.swp
+.tags
+
+*.db*
+*.bak*
+
+public/*.js*
+
+__pycache__
+
+node_modules
+
+.DS_Store
+npm-debug.log*

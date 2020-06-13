@@ -1,0 +1,217 @@
+= Contents =
+   - [[#Overview|Overview]]
+      - [[#Overview#What Is It|What Is It]]
+      - [[#Overview#What It Does|What It Does]]
+      - [[#Overview#What It Solves|What It Solves]]
+      - [[#Overview#Where's It Going|Where's It Going]]
+   - [[#Completeness|Completeness]]
+      - [[#Completeness#What's Here|What's Here]]
+      - [[#Completeness#What's In Progress|What's In Progress]]
+      - [[#Completeness#What's Planned|What's Planned]]
+      - [[#Completeness#What's Impossible|What's Impossible]]
+   - [[#Usability|Usability]]
+   - [[#API|API]]
+      - [[#API#Endpoints|Endpoints]]
+         - [[#API#Endpoints#/api/v1|/api/v1]]
+         - [[#API#Endpoints#/api/v1/help|/api/v1/help]]
+         - [[#API#Endpoints#/api/v1/workbook|/api/v1/workbook]]
+         - [[#API#Endpoints#/api/v1/tickets|/api/v1/tickets]]
+         - [[#API#Endpoints#/api/v1/tickets/all|/api/v1/tickets/all]]
+         - [[#API#Endpoints#/api/v1/workday|/api/v1/workday]]
+         - [[#API#Endpoints#/api/v1/workday/all|/api/v1/workday/all]]
+
+
+= Overview =
+== What Is It ==
+This is a browser-based spreadsheet that connects to both Workday &
+ServiceNow to deliver accurate and up-to-date Onboarding status info.
+
+My guiding principal was to create the tool I wish I had.
+
+== What It Does ==
+It will make API calls to both Workday and ServiceNow, extract relevant
+data and load it into a database. The data is centralized, making access
+easier via any frontend (PowerBI, API calls, or a certain browser-based
+spreadsheet).
+
+_Currently, these API calls are simulated, as I do not have access to_
+_the API. More on this later._
+
+On a set interval (~4x per day), new Workday and SNOW information is
+loaded into the databse, ensuring that Depot & Onboarding is always
+looking at recent and relevant information. This information is visible
+in a familiar spreadsheet-like view, with real-time editable data.
+
+== What It Solves ==
+There are several problems with using a SharePoint spreadsheet as a
+backend data source:
+   1. Lack of logs
+      - Unclear what information has changed
+      - Changes are not attached to a user in an easy to view format
+      - More difficult to rollback to a specific state
+      - Difficult to track changes over time to analyze trends
+   2. Day-to-day data is difficult to extract
+      - Without an incremental change log, we can not extract/view as
+        much useful trend data:
+         - How many hires had orders on Monday vs. Thursday
+         - On average, when are all accounts activated
+   3. No integration with other sites/tools
+      - SharePoint is a standalone service, and does not integrate with
+         - Workday
+         - ServiceNow
+         - Wand, etc.
+      - All data must be manually entered, and manually edited
+
+== Where's It Going ==
+This project was created, first and foremost, as a means for me to
+explore "full stack" development. By absolutely no standard does it
+hold up to professionally created applications/tools.
+
+This is a demonstration of what is possible given existing tools.
+I would like to see this project migrated into ServiceNow, or otherwise
+within the scope of Adobe itself. I believe it is more in line with the
+"right" way to approach this type of data.
+
+= Completeness =
+== What's Here ==
+A JavaScript, browser-based spreadsheet that is platform agnostic, able
+to run in any modern web browser, on any OS, on any device.
+
+The backend runs on AWS, and is accessable via API calls (which are
+documented further below).
+
+All data is stored in a SQLite database with row-based version control,
+and automated backups.
+
+== What's In Progress ==
+Creating a log-in system to ensure no unauthorized access.  User logins
+will also allow for per-user configuration. Setting default views,
+custom column order / display.
+
+Adding a "manager's" view which will show a checklist of completed and
+to-do items to ensure a New Hire is onboarded smoothly. Workday account
+status, machine order status.
+
+Excel Upload to bulk-upload information to the database. User will be
+prompted to download an Excel template with the required fields. By
+uploading back to the server, this information will be either entered
+into the database (if the corresponding rows do not exist), or updated
+(if the rows do exist).
+
+PowerBI dashboard for management to see live data for the current start
+date, as well as track trends quarterly/yearly.
+
+Ability to roll-back specific changes in a searchable/filterable
+history tab.
+
+== What's Planned ==
+Addition of real API calls to ServiceNow and Workday.
+
+Currently I am using simulated data, as I do not have access to either
+Workday or SNOW APIs. There are 4 progressive data sets, serving as
+the example output of API calls run on Monday -> Thursday.
+
+Once I have the API keys, it is a straightforward process to expand
+this utility to run on real data.
+
+== What's Impossible ==
+"Impossible" given the constraints primarily of time and access.
+
+I would love for this to be integrated into a pre-existing Adobe site
+or tool, such as ServiceNow. However I realize this would require
+time/effort on the part of people who are already significantly over-
+worked with more important asks.
+
+= Usability =
+How to use this application:
+
+
+= API =
+== Endpoints ==
+   1. /api/v1/
+   2. /api/v1/help
+   3. /api/v1/tickets
+   4. /api/v1/tickets/all
+   5. /api/v1/workday
+   6. /api/v1/workday/all
+
+=== /api/v1 ===
+Provides link to /api/v1/help
+
+
+=== /api/v1/help ===
+Sends documentation.wiki, provides instructions to:
+   - structure queries
+   - resources for assistance
+   - understanding the back-end logic
+
+
+=== /api/v1/workbook ===
+Main endpoint for the user front-end
+   - `methods:      GET, PATCH`
+   - `GET params:   view`
+   - `PATCH data:   column, oldValue, newValue, fullRow`
+   - `example:      GET /api/v1/tickets?view=depot`
+
+Use PATCH to update an existing entry. Required data to PATCH:
+   1. column
+      - The column in which data was changed
+      - e.g., to update user's Start Date, column is "start_date"
+   2. oldValue
+      - The cell's prior value
+   3. newValue
+      - The cell's updated value
+   4. fullRow
+      - The entire row containing all entries
+      - Necessary to pull out `employee_id` and `version`
+PATCH data must be sent in a JSON format
+
+If successful, the response from a PATCH'd ticket update will include
+   - computer_options
+   - computer_model
+   - computer_status
+of the new ticket entry.
+
+If connected via the web socket, an emit is sent to
+   - "POST_success"
+in which a JSON dict is passed with the ticket info
+
+
+=== /api/v1/tickets ===
+Queries for specific ticket data. Searches are case insensitive,
+and can be a fragment.
+
+Will return all matching tickets for a given column, and with a
+matching search term.
+
+   - `methods:  GET`
+   - `params:   <column name>`
+   - `example:  GET /api/v1/tickets?name=Marcus`
+
+
+=== /api/v1/tickets/all ===
+Returns all ticket entries in the database
+
+   - `methods:  GET`
+   - `params:   <none>`
+   - `example:  GET /api/v1/tickets/all`
+
+
+=== /api/v1/workday ===
+Queries for specific workday data. Searches are case insensitive,
+and can be a fragment.
+
+Will return all matching hires for a given column, and with a
+matching search term.
+
+   - `methods:  GET`
+   - `params:   <column name>`
+   - `example:  GET /api/v1/workday?start_date=2019-08-12`
+
+
+=== /api/v1/workday/all ===
+Returns all workday entries in the database
+
+   - `methods:  GET`
+   - `params:   <none>`
+   - `example:  GET /api/v1/workday/all`

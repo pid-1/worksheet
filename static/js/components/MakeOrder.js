@@ -1,0 +1,146 @@
+export const orderedKeys = [
+   "employee_id",
+   "depot_status",
+   "onboarding_status",
+   "name",
+   "email",
+   "start_date",
+   "hire_status",
+   "hired_date",
+   "worker_type",
+   "hire_type",
+   "manager",
+   "talent_coordinator",
+   "requisition",
+   "tickets_found",
+   "computer_status",
+   "order_placed",
+   "computer_options",
+   "computer_model",
+   "general_notes",
+   "version"
+];
+
+
+export const columnProps = {
+   "employee_id": {
+      headerName: "Employee ID",
+      filter: true,
+      editable: false,
+      hide: true,
+   },
+   "depot_status": {
+      headerName: "Status (Depot)",
+      filter: true,
+      editable: true,
+      hide: false,
+   },
+   "onboarding_status": {
+      headerName: "Status (Onboarding)",
+      filter: true,
+      editable: true,
+      hide: false,
+   },
+   "name": {
+      headerName: "Name",
+      filter: true,
+      editable: false,
+      hide: false,
+   },
+   "email": {
+      headerName: "Email",
+      filter: true,
+      editable: false,
+      hide: false,
+   },
+   "start_date": {
+      headerName: "Start Date",
+      filter: "agDateColumnFilter",
+      editable: false,
+      hide: false,
+   },
+   "hire_status": {
+      headerName: "Hire Status",
+      filter: true,
+      editable: false,
+      hide: false,
+   },
+   "hired_date": {
+      headerName: "Hired Date",
+      filter: "agDateColumnFilter",
+      editable: false,
+      hide: false,
+   },
+   "worker_type": {
+      headerName: "Worker Type",
+      filter: true,
+      editable: false,
+      hide: false,
+   },
+   "hire_type": {
+      headerName: "Hire Type",
+      filter: true,
+      editable: false,
+      hide: false,
+   },
+   "manager": {
+      headerName: "Manager",
+      filter: true,
+      editable: false,
+      hide: false,
+   },
+   "talent_coordinator": {
+      headerName: "Talent Coordinator",
+      filter: true,
+      editable: false,
+      hide: false,
+   },
+   "requisition": {
+      headerName: "Requisition #",
+      filter: true,
+      editable: false,
+      hide: false,
+   },
+   "tickets_found": {
+      headerName: "Ticket(s) Found",
+      filter: true,
+      editable: true,
+      hide: false,
+   },
+   "order_placed": {
+      headerName: "Order Placed",
+      filter: "agDateColumnFilter",
+      editable: false,
+      hide: false,
+   },
+   "computer_options": {
+      headerName: "Comp. Options",
+      filter: true,
+      editable: false,
+      hide: false,
+   },
+   "computer_model": {
+      headerName: "Comp. Model",
+      filter: true,
+      editable: false,
+      hide: false,
+   },
+   "computer_status": {
+      headerName: "Comp. Status",
+      filter: true,
+      editable: false,
+      hide: false,
+   },
+   "general_notes": {
+      headerName: "General Notes",
+      filter: false,
+      editable: true,
+      hide: false,
+   },
+   "version": {
+      headerName: "Version",
+      filter: false,
+      editable: false,
+      hide: true,
+   }
+};

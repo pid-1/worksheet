@@ -1,0 +1,23 @@
+.container-home-outer {
+   display: flex;
+   justify-content: center;
+}
+
+.container-home-inner {
+   width: 50%;
+   border-radius: 3px;
+   box-shadow: 0 0 12px rgba(0,0,0,0.1);
+   background-color: #ffffff;
+   padding: 2em;
+   margin-top: 2em;
+}
+
+.container-home-inner p,
+.container-home-inner h3 {
+   color: #333;
+}
+
+.container-home-inner a {
+   color: rgb(235,106,106);
+   font-weight: bold;
+}

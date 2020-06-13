@@ -1,0 +1,25 @@
+.container-nav-outer {
+   display: flex;
+   background-color: #333;
+   justify-content: center;
+   align-items: center;
+   box-shadow: 0 0 12px rgba(0,0,0,1);
+}
+
+.container-nav-links {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+}
+
+.nav-link li {
+   display: block;
+   color: rgb(235,106,106);
+   text-align: center;
+   padding: 16px 20px;
+   transition-duration: 0.3s;
+}
+
+.nav-link li:hover {
+   background-color: #111
+}
