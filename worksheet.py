@@ -31,17 +31,6 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 
-# EDIT
-# Remove on final edit
-def d(title, message):
-   from textwrap import dedent
-   print(dedent(f'''
-         {title}
-         -----
-         {message}
-         '''))
-
-
 class User(UserMixin):
    def __init__(self, user_id):
       self.id = user_id
@@ -296,10 +285,6 @@ def flask_login():
       user = User(query_user_id)
       login_user(user)
 
-      # EDIT
-      # For debugging
-      print(f'\n   UID: {query_user_id}\n   PASS: {query_password}\n   DEFAULTS: {u["defaults"]}\n')
-
       return jsonify(u['defaults'])
    else:
       return Response(status=401)
@@ -347,7 +332,7 @@ def flask_worksheet():
       elif view == 'onboarding':
          view = 'view_onboarding'
       elif view == 'managers':
-         # EDIT
+         #
          # Putting this here temporarily
          #  before making a formal SQL view
          with SQL() as c:
