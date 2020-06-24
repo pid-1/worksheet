@@ -2,7 +2,7 @@
 
 Project started May 2019. Discontinued Jan 2020.
 
-No offial readme yet. See ./doc/ for pictures of the general website flow.
+No official readme yet. See ./doc/ for pictures of the general website flow.
 
 In short:
   - Flask backend
